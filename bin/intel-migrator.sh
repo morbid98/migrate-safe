@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=0.14
+VERSION=0.16
 
 export DATABASE_MIGRATIONS_OLD="${DATABASE_MIGRATIONS_OLD:-/migrations-old}"
 
@@ -20,15 +20,22 @@ exec 2>&1
 
 # --------------------------------------------------------------------------------------------------------------------------------
 
-
+function HidePassword() {
+  local line pass="${DATABASE_PASSWORD//\*/\\*}"
+  pass="${pass//\?/\\?}"
+  # echo "$pass" #disabled
+  while read -r line ; do 
+    echo "${line//$pass/####}"
+  done
+}
 
 function Ex() {
-  echo "+$@" >&2
+  echo "+$@" | HidePassword >&2
   "$@"
 }
 
 function Exe() {
-  echo "+$@" >&2
+  echo "+$@" | HidePassword >&2
   "$@"
   local ec=$?
   if (( $ec != 0 )) ; then
@@ -55,7 +62,7 @@ function dump_vars() {
   echo "DATABASE_NAME=$DATABASE_NAME"
   echo "DATABASE_USER=$DATABASE_USER"
   echo "DATABASE_SSLMODE=$DATABASE_SSLMODE"
-  echo "DATABASE_PASSWORD=$DATABASE_PASSWORD"
+  echo "DATABASE_PASSWORD=$DATABASE_PASSWORD" | HidePassword
 }
 
 # --------------------------------------------------------------------------------------------------------------------------------
