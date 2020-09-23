@@ -25,6 +25,10 @@ image: build
 	docker build -f $(DOCKERFILE) -t $(IMAGE_NAME) .
 	docker image tag $(IMAGE_NAME) $(IMAGE_REGISTRY)/$(APP_NAME):latest
 
+.PHONY: clean
+clean:
+	docker rmi $(IMAGE_NAME) $(IMAGE_REGISTRY)/$(APP_NAME):latest
+
 push: image
 	docker push $(IMAGE_NAME)
 
